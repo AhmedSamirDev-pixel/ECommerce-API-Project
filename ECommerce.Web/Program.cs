@@ -1,4 +1,7 @@
 
+using ECommerce.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace ECommerce.Web
 {
     public class Program
@@ -12,6 +15,12 @@ namespace ECommerce.Web
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            // Configure the DbContext with SQL Server provider
+            builder.Services.AddDbContext<StoreDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             var app = builder.Build();
 

@@ -14,11 +14,11 @@ namespace ECommerce.Domain.Models.Products
         public decimal Price { get; set; }
 
 
-        public int productBrandId { get; set; }
-        public ProductBrand ProductBrand { get; set; } = null!;
+        public int BrandId { get; set; }
+        public ProductBrand Brand { get; set; } = null!;
 
 
-        public int ProductTypeId { get; set; }
-        public ProductType ProductType { get; set; } = null!;
+        public int TypeId { get; set; }
+        public ProductType Type { get; set; } = null!;
     }
 }
