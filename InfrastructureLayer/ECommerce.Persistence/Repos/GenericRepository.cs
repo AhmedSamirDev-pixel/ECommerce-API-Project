@@ -18,15 +18,21 @@ namespace ECommerce.Persistence.Repos
             _context = context;
         }
 
+        // Get all entities
         public async Task<IEnumerable<TEntity>> GetAllAsync()
             => await _context.Set<TEntity>().ToListAsync();
 
+        // Get entity by id
         public async Task<TEntity?> GetByIdAsync(TKey id) => await _context.Set<TEntity>().FindAsync(id);
 
+        // Add new entity
         public void Add(TEntity entity) => _context.Set<TEntity>().Add(entity);
 
+        // Update existing entity
+        public void Update(TEntity entity) => _context.Set<TEntity>().Update(entity);
+
+        // Delete entity
         public void Delete(TEntity entity) => _context.Set<TEntity>().Remove(entity);
 
-        public void Update(TEntity entity) => _context.Set<TEntity>().Update(entity);
     }
 }
