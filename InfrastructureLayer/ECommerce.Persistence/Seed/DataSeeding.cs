@@ -19,10 +19,11 @@ namespace ECommerce.Persistence.Seed
             _context = context;
         }
 
-        public void DataSeed()
+        public async Task DataSeedAsync()
         {
             // Check if there any migration pending 
-            if (_context.Database.GetPendingMigrations().Any())
+            var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+            if (pendingMigrations.Any())
                 _context.Database.Migrate(); // Apply any migration pending (Update to Database)
 
             // Check if there any data inside ProductBrands table.
@@ -30,7 +31,7 @@ namespace ECommerce.Persistence.Seed
             {
                 // ReadAllText => Read the Json file and convert it to string.
                 string productBrandData =
-                    File.ReadAllText(@"..\InfrastructureLayer\ECommerce.Persistence\Data\brands.json");
+                  await  File.ReadAllTextAsync(@"..\InfrastructureLayer\ECommerce.Persistence\Data\brands.json");
 
                 // Deserialize the JSON string into a list of C# ProductBrand objects
                 var productBrands = JsonSerializer.Deserialize<List<ProductBrand>>(productBrandData);
@@ -50,7 +51,7 @@ namespace ECommerce.Persistence.Seed
             {
                 // ReadAllText => Read the Json file and convert it to string.
                 string productTypesData =
-                    File.ReadAllText(@"..\InfrastructureLayer\ECommerce.Persistence\Data\types.json");
+                 await File.ReadAllTextAsync(@"..\InfrastructureLayer\ECommerce.Persistence\Data\types.json");
 
                 // Deserialize the JSON string into a list of C# ProductType objects
                 var productTypes = JsonSerializer.Deserialize<List<ProductType>>(productTypesData);
@@ -69,7 +70,7 @@ namespace ECommerce.Persistence.Seed
             {
                 // ReadAllText => Read the Json file and convert it to string.
                 string productData =
-                    File.ReadAllText(@"..\InfrastructureLayer\ECommerce.Persistence\Data\products.json");
+                    await File.ReadAllTextAsync(@"..\InfrastructureLayer\ECommerce.Persistence\Data\products.json");
 
                 // Deserialize the JSON string into a list of C# Product objects
                 var product = JsonSerializer.Deserialize<List<Product>>(productData);

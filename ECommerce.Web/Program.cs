@@ -34,7 +34,7 @@ namespace ECommerce.Web
             // Get the IDataSeeding service from the service provider
             var dataSeeding = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
             // Call the DataSeed method to seed the database
-            dataSeeding.DataSeed();
+            dataSeeding.DataSeedAsync();
 
 
             // Configure the HTTP request pipeline.
