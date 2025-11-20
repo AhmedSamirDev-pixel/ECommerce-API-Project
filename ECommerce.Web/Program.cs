@@ -1,8 +1,11 @@
 
 using ECommerce.Domain.Contracts.Seed;
+using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Persistence.Contexts;
 using ECommerce.Persistence.Seed;
+using ECommerce.Persistence.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ECommerce.Web
 {
@@ -26,6 +29,9 @@ namespace ECommerce.Web
 
             // Register the DataSeeding service
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
+
+            // Register the UnitOfWork service
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 
