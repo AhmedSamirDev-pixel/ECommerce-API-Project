@@ -9,10 +9,22 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Services.BusinessServices
 {
-    public class ServiceManager(IMapper _mapper, IUnitOfWork _unitofwork) : IServiceManager
+    // Service Manager to manage all services
+    public class ServiceManager: IServiceManager
     {
-        public readonly Lazy<IProductServices> lazyProductServices = 
-           new Lazy<IProductServices>(() => new ProductServices(mapper: _mapper, unitOfWork: _unitofwork));
+        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly Lazy<IProductServices> lazyProductServices;
+        public ServiceManager(IMapper mapper, IUnitOfWork unitOfWork)
+        {
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            // Initialize lazy ProductServices
+            lazyProductServices = new Lazy<IProductServices>(
+                 () => new ProductServices(_unitOfWork, _mapper)
+            );
+        }
+        // Expose ProductServices via IServiceManager
         public IProductServices ProductServices => lazyProductServices.Value;
     }
 }
