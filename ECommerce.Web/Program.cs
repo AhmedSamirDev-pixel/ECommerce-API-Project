@@ -4,6 +4,7 @@ using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Persistence.Contexts;
 using ECommerce.Persistence.Seed;
 using ECommerce.Persistence.UnitOfWork;
+using ECommerce.Services.MappingProfile;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -32,6 +33,9 @@ namespace ECommerce.Web
 
             // Register the UnitOfWork service
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Configure AutoMapper with the ProjectProfile
+            builder.Services.AddAutoMapper(mapper => mapper.AddProfile(new ProjectProfile()));
 
             var app = builder.Build();
 
