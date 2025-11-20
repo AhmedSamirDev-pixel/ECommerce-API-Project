@@ -37,7 +37,8 @@ namespace ECommerce.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Configure AutoMapper with the ProjectProfile
-            builder.Services.AddAutoMapper(mapper => mapper.AddProfile(new ProjectProfile()));
+            builder.Services.AddAutoMapper(mapper => mapper
+                    .AddProfile(new ProjectProfile(builder.Configuration)));
 
             // Register the ServiceManager service
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
@@ -60,7 +61,8 @@ namespace ECommerce.Web
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            // Enable serving static files
+            app.UseStaticFiles();
 
 
             app.MapControllers();
