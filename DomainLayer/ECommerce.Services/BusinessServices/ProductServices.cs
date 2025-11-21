@@ -33,10 +33,9 @@ namespace ECommerce.Services.BusinessServices
             return brandsDTO;
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(int? brandID, int? typeID, ProductSortingOptions? sortingOption)
+        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(ProductQueryParam productQueryParam)
         {
-
-           var specification = new ProductSpecifications(brandID, typeID, sortingOption);
+           var specification = new ProductSpecifications(productQueryParam);
            IGenericRepository<Product, int> repo = _unitOfWork.GetRepository<Product, int>();
            IEnumerable<Product> products = await repo.GetAllWithSpecificationsAsync(specification);
 

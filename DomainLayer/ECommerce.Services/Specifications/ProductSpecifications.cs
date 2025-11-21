@@ -11,12 +11,12 @@ namespace ECommerce.Services.Specifications
 {
     public class ProductSpecifications : BaseSpecifications<Product, int>
     {
-        public ProductSpecifications(int? brandID, int? typeID, ProductSortingOptions? sortingOption) : base(product => (!brandID.HasValue || product.BrandId == brandID) && (!typeID.HasValue || product.TypeId == typeID))
+        public ProductSpecifications(ProductQueryParam productQueryParam) : base(product => (!productQueryParam.brandID.HasValue || product.BrandId == productQueryParam.brandID) && (!productQueryParam.typeID.HasValue || product.TypeId == productQueryParam.typeID) && (string.IsNullOrEmpty(productQueryParam.searchValue) || product.Name.ToLower().Contains(productQueryParam.searchValue.ToLower())))
         {
             AddInclude(product => product.Brand);
             AddInclude(product => product.Type);
 
-            switch (sortingOption)
+            switch (productQueryParam.sortingOption)
             {
                 case ProductSortingOptions.NameAscending:
                     AddOrderBy(product => product.Name);
