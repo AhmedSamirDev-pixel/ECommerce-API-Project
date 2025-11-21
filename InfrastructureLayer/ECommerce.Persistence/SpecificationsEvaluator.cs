@@ -18,6 +18,12 @@ namespace ECommerce.Persistence
             if (specifications.Criteria is not null)
                 query = query.Where(specifications.Criteria);
 
+            if (specifications.OrderBy is not null)
+                query = query.OrderBy(specifications.OrderBy);
+
+            if (specifications.OrderByDesc is not null)
+                query = query.OrderByDescending(specifications.OrderByDesc);
+
             if (specifications.Includes is not null && specifications.Includes.Any())
                 query = specifications.Includes.Aggregate(query, (CurrentQuery, Expression) => CurrentQuery.Include(Expression));
 

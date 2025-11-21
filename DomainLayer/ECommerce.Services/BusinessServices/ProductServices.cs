@@ -4,6 +4,7 @@ using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Domain.Models.Products;
 using ECommerce.Services.Specifications;
 using ECommerce.ServicesAbstraction.IServices;
+using ECommerce.Shared.Common;
 using ECommerce.Shared.DTOs;
 using System;
 using System.Collections.Generic;
@@ -32,10 +33,10 @@ namespace ECommerce.Services.BusinessServices
             return brandsDTO;
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(int? brandID, int? typeID)
+        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(int? brandID, int? typeID, ProductSortingOptions? sortingOption)
         {
 
-           var specification = new ProductSpecifications(brandID, typeID);
+           var specification = new ProductSpecifications(brandID, typeID, sortingOption);
            IGenericRepository<Product, int> repo = _unitOfWork.GetRepository<Product, int>();
            IEnumerable<Product> products = await repo.GetAllWithSpecificationsAsync(specification);
 

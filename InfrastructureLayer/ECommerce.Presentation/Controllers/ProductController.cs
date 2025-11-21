@@ -1,4 +1,5 @@
 ﻿using ECommerce.ServicesAbstraction.IServices;
+using ECommerce.Shared.Common;
 using ECommerce.Shared.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +24,9 @@ namespace ECommerce.Presentation.Controllers
         [HttpGet("products")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // Define action methods to handle product-related requests
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(int? brandID, int? typeID)
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(int? brandID, int? typeID, ProductSortingOptions? sortingOption)
         {
-           var products = await _serviceManager.ProductServices.GetAllProductAsync(brandID, typeID);
+           var products = await _serviceManager.ProductServices.GetAllProductAsync(brandID, typeID, sortingOption);
            return Ok(products);
         }
 
