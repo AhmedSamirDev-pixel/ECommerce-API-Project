@@ -23,9 +23,9 @@ namespace ECommerce.Presentation.Controllers
         [HttpGet("products")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // Define action methods to handle product-related requests
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts(int? brandID, int? typeID)
         {
-           var products = await _serviceManager.ProductServices.GetAllProductAsync();
+           var products = await _serviceManager.ProductServices.GetAllProductAsync(brandID, typeID);
            return Ok(products);
         }
 

@@ -32,10 +32,10 @@ namespace ECommerce.Services.BusinessServices
             return brandsDTO;
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync()
+        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(int? brandID, int? typeID)
         {
 
-           var specification = new ProductSpecifications();
+           var specification = new ProductSpecifications(brandID, typeID);
            IGenericRepository<Product, int> repo = _unitOfWork.GetRepository<Product, int>();
            IEnumerable<Product> products = await repo.GetAllWithSpecificationsAsync(specification);
 

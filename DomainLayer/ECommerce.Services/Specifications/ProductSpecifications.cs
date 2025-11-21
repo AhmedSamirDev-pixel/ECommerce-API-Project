@@ -10,7 +10,7 @@ namespace ECommerce.Services.Specifications
 {
     public class ProductSpecifications : BaseSpecifications<Product, int>
     {
-        public ProductSpecifications() : base(null)
+        public ProductSpecifications(int? brandID, int? typeID) : base(product => (!brandID.HasValue || product.BrandId == brandID) && (!typeID.HasValue || product.TypeId == typeID))
         {
             AddInclude(product => product.Brand);
             AddInclude(product => product.Type);
