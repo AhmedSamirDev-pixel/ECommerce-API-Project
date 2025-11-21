@@ -1,4 +1,5 @@
-﻿using ECommerce.Domain.Models;
+﻿using ECommerce.Domain.Contracts.Specifications;
+using ECommerce.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,13 @@ namespace ECommerce.Domain.Contracts.Repos
         // Update existing entity
         void Update(TEntity entity);
 
-        // Delete entity
+        // Delete Entity
         void Delete(TEntity entity);
 
+        // Get All Entities With it's own specifications
+        Task<IEnumerable<TEntity>> GetAllWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications);
+
+        // Get entity by Id With it's own specification
+        Task<TEntity> GetByIdWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications);
     }
 }

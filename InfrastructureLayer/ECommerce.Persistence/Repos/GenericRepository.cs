@@ -1,4 +1,5 @@
 ﻿using ECommerce.Domain.Contracts.Repos;
+using ECommerce.Domain.Contracts.Specifications;
 using ECommerce.Domain.Models;
 using ECommerce.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -34,5 +35,14 @@ namespace ECommerce.Persistence.Repos
         // Delete entity
         public void Delete(TEntity entity) => _context.Set<TEntity>().Remove(entity);
 
+        public async Task<IEnumerable<TEntity>> GetAllWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            return await SpecificationsEvaluator.CreateQuery(_context.Set<TEntity>(), specifications).ToListAsync();
+        }
+
+        public async Task<TEntity> GetByIdWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            return await SpecificationsEvaluator.CreateQuery(_context.Set<TEntity>(), specifications).FirstOrDefaultAsync();
+        }
     }
 }

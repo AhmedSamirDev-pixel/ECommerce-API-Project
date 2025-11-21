@@ -2,6 +2,7 @@
 using ECommerce.Domain.Contracts.Repos;
 using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Domain.Models.Products;
+using ECommerce.Services.Specifications;
 using ECommerce.ServicesAbstraction.IServices;
 using ECommerce.Shared.DTOs;
 using System;
@@ -33,8 +34,10 @@ namespace ECommerce.Services.BusinessServices
 
         public async Task<IEnumerable<ProductDTO>> GetAllProductAsync()
         {
+
+           var specification = new ProductSpecifications();
            IGenericRepository<Product, int> repo = _unitOfWork.GetRepository<Product, int>();
-           IEnumerable<Product> products = await repo.GetAllAsync();
+           IEnumerable<Product> products = await repo.GetAllWithSpecificationsAsync(specification);
 
             // Convert the list of Product entities into a list of ProductDTO using AutoMapper.
             var productDTO = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(products);
@@ -53,7 +56,9 @@ namespace ECommerce.Services.BusinessServices
 
         public async Task<ProductDTO> GetProductByIdAsync(int id)
         {
-           Product? product = await _unitOfWork.GetRepository<Product, int>().GetByIdAsync(id);
+           var specification = new ProductSpecifications(id);
+           Product? product = await _unitOfWork.GetRepository<Product, int>().GetByIdWithSpecificationsAsync(specification);
+
             // Convert the list of Product entities into a list of ProductDTO using AutoMapper.
             return _mapper.Map<Product, ProductDTO>(product!);
         }
