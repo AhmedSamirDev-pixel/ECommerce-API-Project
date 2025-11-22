@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ECommerce.Domain.Contracts.Repos;
 using ECommerce.Domain.Contracts.UnitOfWork;
+using ECommerce.Domain.Exceptions;
 using ECommerce.Domain.Models.Products;
 using ECommerce.Services.Specifications;
 using ECommerce.ServicesAbstraction.IServices;
@@ -64,6 +65,10 @@ namespace ECommerce.Services.BusinessServices
         {
            var specification = new ProductSpecifications(id);
            Product? product = await _unitOfWork.GetRepository<Product, int>().GetByIdWithSpecificationsAsync(specification);
+
+            if (product == null)
+                // Custom Exception
+                throw new ProductNotFound(id);
 
             // Convert the list of Product entities into a list of ProductDTO using AutoMapper.
             return _mapper.Map<Product, ProductDTO>(product!);
