@@ -35,14 +35,23 @@ namespace ECommerce.Persistence.Repos
         // Delete entity
         public void Delete(TEntity entity) => _context.Set<TEntity>().Remove(entity);
 
+        // Get All Entities With it's own specifications
         public async Task<IEnumerable<TEntity>> GetAllWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications)
         {
             return await SpecificationsEvaluator.CreateQuery(_context.Set<TEntity>(), specifications).ToListAsync();
         }
 
+        // Get entity by Id With it's own specification
         public async Task<TEntity> GetByIdWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications)
         {
             return await SpecificationsEvaluator.CreateQuery(_context.Set<TEntity>(), specifications).FirstOrDefaultAsync();
+        }
+
+        // Returns the total number of entities that match the specification (filter only).
+        public async Task<int> GetCountWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            var query = SpecificationsEvaluator.CreateQuery(_context.Set<TEntity>(), specifications);
+            return await query.CountAsync();
         }
     }
 }

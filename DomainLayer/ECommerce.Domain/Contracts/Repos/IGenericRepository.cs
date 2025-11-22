@@ -31,5 +31,8 @@ namespace ECommerce.Domain.Contracts.Repos
 
         // Get entity by Id With it's own specification
         Task<TEntity> GetByIdWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications);
+
+        // Returns the total number of entities that match the specification (filter only).
+        Task<int> GetCountWithSpecificationsAsync(ISpecifications<TEntity, TKey> specifications);
     }
 }

@@ -43,9 +43,11 @@ namespace ECommerce.Services.BusinessServices
            var Data = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(products);
            var Size = Data.Count();
 
-           // Total Count -> later
+            // Total Count 
+            var countSpecification = new CountProductSpecifications(productQueryParam);
+            var Count = await _unitOfWork.GetRepository<Product, int>().GetCountWithSpecificationsAsync(countSpecification);
 
-           return new PaginationResult<ProductDTO>(productQueryParam.pageIndex,Size,0,Data);
+           return new PaginationResult<ProductDTO>(productQueryParam.pageIndex,Size, Count, Data);
         }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypesAsync()
