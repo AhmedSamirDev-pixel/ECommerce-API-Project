@@ -24,6 +24,9 @@ namespace ECommerce.Persistence
             if (specifications.OrderByDesc is not null)
                 query = query.OrderByDescending(specifications.OrderByDesc);
 
+            if (specifications.IsPaginated)
+                query = query.Skip(specifications.Skip).Take(specifications.Take);
+
             if (specifications.Includes is not null && specifications.Includes.Any())
                 query = specifications.Includes.Aggregate(query, (CurrentQuery, Expression) => CurrentQuery.Include(Expression));
 

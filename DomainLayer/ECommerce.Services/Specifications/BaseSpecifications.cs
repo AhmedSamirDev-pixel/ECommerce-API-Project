@@ -37,11 +37,23 @@ namespace ECommerce.Services.Specifications
 
         #region Includes
         public List<Expression<Func<TEntity, object>>> Includes { get; } = [];
-
         protected void AddInclude(Expression<Func<TEntity, object>> IncludeExpression)
         {
             Includes.Add(IncludeExpression);
-        } 
+        }
+        #endregion
+
+        #region Pagination
+        public int Take { get; private set; }
+        public int Skip { get; private set; }
+        public bool IsPaginated { get; set; }
+
+        public void ApplyPagination(int pageIndex, int pageSize)
+        {
+            IsPaginated = true;
+            Take = pageSize;
+            Skip = (pageIndex - 1) * pageSize;
+        }
         #endregion
     }
 }

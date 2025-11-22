@@ -33,6 +33,8 @@ namespace ECommerce.Services.Specifications
                 default:
                     break;
             }
+
+            ApplyPagination(productQueryParam.pageIndex, productQueryParam.pageSize);
         }
 
         public ProductSpecifications(int id) : base(product => product.Id == id)

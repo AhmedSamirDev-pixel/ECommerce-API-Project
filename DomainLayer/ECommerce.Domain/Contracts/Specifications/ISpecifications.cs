@@ -11,10 +11,19 @@ namespace ECommerce.Domain.Contracts.Specifications
     
     public interface ISpecifications<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
-        Expression<Func<TEntity, bool>> Criteria { get; } // Where
-        List<Expression<Func<TEntity, object>>> Includes { get; } // Includes
+        // Filter Criteria (WHERE)
+        Expression<Func<TEntity, bool>> Criteria { get; }
+        //Includes(to load navigation properties)
+        List<Expression<Func<TEntity, object>>> Includes { get; }
+        // Sorting Ascending
         Expression<Func<TEntity, object>> OrderBy { get; }
+        // Sorting Descending
         Expression<Func<TEntity, object>> OrderByDesc { get; }
+
+        // Adding Pagination
+        int Take { get; }
+        int Skip { get; }
+        bool IsPaginated { get; set; }
 
     }
 }
