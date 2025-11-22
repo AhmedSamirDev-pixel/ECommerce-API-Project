@@ -7,6 +7,7 @@ using ECommerce.Persistence.UnitOfWork;
 using ECommerce.Services.BusinessServices;
 using ECommerce.Services.MappingProfile;
 using ECommerce.ServicesAbstraction.IServices;
+using ECommerce.Web.CustomMiddlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -58,6 +59,9 @@ namespace ECommerce.Web
             {
                 app.MapOpenApi();
             }
+
+            // Custom Exception Middleware
+            app.UseMiddleware<CustomExceptionMiddleware>();    
 
             app.UseHttpsRedirection();
 
