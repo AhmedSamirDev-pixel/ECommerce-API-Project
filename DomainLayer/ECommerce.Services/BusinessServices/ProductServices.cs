@@ -33,15 +33,19 @@ namespace ECommerce.Services.BusinessServices
             return brandsDTO;
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(ProductQueryParam productQueryParam)
+        public async Task<PaginationResult<ProductDTO>> GetAllProductAsync(ProductQueryParam productQueryParam)
         {
            var specification = new ProductSpecifications(productQueryParam);
            IGenericRepository<Product, int> repo = _unitOfWork.GetRepository<Product, int>();
            IEnumerable<Product> products = await repo.GetAllWithSpecificationsAsync(specification);
 
             // Convert the list of Product entities into a list of ProductDTO using AutoMapper.
-            var productDTO = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(products);
-           return productDTO;
+           var Data = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(products);
+           var Size = Data.Count();
+
+           // Total Count -> later
+
+           return new PaginationResult<ProductDTO>(productQueryParam.pageIndex,Size,0,Data);
         }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypesAsync()
