@@ -7,7 +7,9 @@ using ECommerce.Persistence.UnitOfWork;
 using ECommerce.Services.BusinessServices;
 using ECommerce.Services.MappingProfile;
 using ECommerce.ServicesAbstraction.IServices;
+using ECommerce.Shared.ErrorModels;
 using ECommerce.Web.CustomMiddlewares;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -43,6 +45,32 @@ namespace ECommerce.Web
 
             // Register the ServiceManager service
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
+            builder.Services.Configure<ApiBehaviorOptions>((options) =>
+            {
+                // Override the default behavior when model validation fails
+                options.InvalidModelStateResponseFactory = (context) =>
+                {
+                    // Extract validation errors from the ModelState dictionary
+                    var errors = context.ModelState
+                        .Where(model => model.Value.Errors.Any()) // Only fields with errors
+                        .Select(model => new ValidationError()
+                        {
+                            Field = model.Key, // The name of the invalid property
+                            Errors = model.Value.Errors.Select(error => error.ErrorMessage) // List of validation messages
+                        });
+
+                    // Build a structured validation error response
+                    var response = new ValidationErrorToReturn()
+                    {
+                        ValidationErrors = errors // Attach extracted validation errors
+                    };
+
+                    // Return response with HTTP 400 BadRequest and the custom error model
+                    return new BadRequestObjectResult(response);
+                };
+            });
+
 
             var app = builder.Build();
 
