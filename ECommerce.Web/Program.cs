@@ -46,6 +46,7 @@ namespace ECommerce.Web
             // Register the ServiceManager service
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
+            // Configure Custom Validation Error Response
             builder.Services.Configure<ApiBehaviorOptions>((options) =>
             {
                 // Override the default behavior when model validation fails
