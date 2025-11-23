@@ -1,6 +1,8 @@
 
+using ECommerce.Domain.Contracts.BasketRepo;
 using ECommerce.Domain.Contracts.Seed;
 using ECommerce.Domain.Contracts.UnitOfWork;
+using ECommerce.Persistence.BasketRepo;
 using ECommerce.Persistence.Contexts;
 using ECommerce.Persistence.Seed;
 using ECommerce.Persistence.UnitOfWork;
@@ -12,6 +14,7 @@ using ECommerce.Web.CustomMiddlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using StackExchange.Redis;
 
 namespace ECommerce.Web
 {
@@ -72,6 +75,18 @@ namespace ECommerce.Web
                 };
             });
 
+            // Register the BasketRepository as a scoped service
+            // This means a new instance will be created per HTTP request
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+
+            // Register the Redis connection multiplexer as a singleton
+            // Singleton is used because we only need one Redis connection throughout the application
+            builder.Services.AddSingleton<IConnectionMultiplexer>((_) =>
+            {
+                // Connect to Redis using the connection string defined in appsettings.json
+                // "RedisConnection": "localhost"
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
+            });
 
             var app = builder.Build();
 
