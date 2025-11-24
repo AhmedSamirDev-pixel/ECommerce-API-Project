@@ -34,6 +34,47 @@ namespace ECommerce.Web
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            #region Swagger
+            builder.Services.AddEndpointsApiExplorer(); // Required for minimal API & controllers
+            builder.Services.AddSwaggerGen(options =>
+            {
+            options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = "ECommerce API",
+                Version = "v1",
+                Description = "API for E-Commerce with Authentication and Address Management"
+            });
+
+            // Add JWT Authentication to Swagger
+            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http, // Change from ApiKey -> Http
+                Scheme = "Bearer", // Must be exactly "Bearer"
+                BearerFormat = "JWT",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                Description = "Enter 'Bearer' followed by your valid JWT token.\n\nExample: \"Bearer eyJhbGciOi...\""
+            });
+
+            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            {
+                {
+                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    {
+                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                        {
+                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>() // No scopes required
+                }
+            });
+            });
+            #endregion
+
+
+
             #region Databases Connections
             // Configure the DbContext with SQL Server provider
             builder.Services.AddDbContext<StoreDbContext>(options =>
@@ -142,7 +183,12 @@ namespace ECommerce.Web
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger(); // Generates swagger.json
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ECommerce API V1");
+                    c.RoutePrefix = "swagger"; // Optional: sets swagger at /swagger
+                });
             }
 
             // Custom Exception Middleware
