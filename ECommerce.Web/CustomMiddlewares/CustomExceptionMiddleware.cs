@@ -44,30 +44,39 @@ namespace ECommerce.Web.CustomMiddlewares
                 // Log the exception with details
                 _logger.LogError(ex, ex.Message);
 
-                #region Response Header
+
+                // Build the error response object
+                var response = new ErrorToReturn
+                {
+                    Message = ex.Message,
+                };
+
+                
                 // Determine the appropriate status code based on the exception type
                 context.Response.StatusCode = ex switch
                 {
                     NotFoundException => StatusCodes.Status404NotFound, // Custom domain exception
+                    UnAuthorizedException => StatusCodes.Status401Unauthorized,
+                    BadRequestException badRequestException => GetBadRequestErrors(badRequestException, response),
                     _ => StatusCodes.Status500InternalServerError        // Default to server error
                 };
 
+                response.StatusCode = context.Response.StatusCode;  
+
                 // Specify that the response will be in JSON format
                 context.Response.ContentType = "Application/Json";
-                #endregion
-
-                #region Response Body
-                // Build the error response object
-                var response = new ErrorToReturn
-                {
-                    StatusCode = context.Response.StatusCode,
-                    Message = ex.Message
-                };
 
                 // Return the error object as JSON
                 await context.Response.WriteAsJsonAsync(response);
-                #endregion
+                
+
             }
+        }
+        
+        private int GetBadRequestErrors(BadRequestException exception, ErrorToReturn response)
+        {
+            response.Errors = exception.Errors;
+            return StatusCodes.Status400BadRequest;
         }
     }
 }

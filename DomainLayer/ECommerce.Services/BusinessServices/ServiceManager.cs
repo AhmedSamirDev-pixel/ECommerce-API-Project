@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ECommerce.Domain.Contracts.BasketRepo;
 using ECommerce.Domain.Contracts.UnitOfWork;
+using ECommerce.Domain.Models.Identity;
 using ECommerce.ServicesAbstraction.IServices;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +17,18 @@ namespace ECommerce.Services.BusinessServices
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly Lazy<IProductServices> lazyProductServices;
         private readonly IBasketRepository _basketRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly Lazy<IProductServices> lazyProductServices;
         private readonly Lazy<IBasketService> lazyBasketServices;
+        private readonly Lazy<IAuthenticationServices> lazyAuthenticationServices;
 
-        public ServiceManager(IMapper mapper, IUnitOfWork unitOfWork, IBasketRepository basketRepository)
+        public ServiceManager(IMapper mapper, IUnitOfWork unitOfWork, IBasketRepository basketRepository, UserManager<ApplicationUser> userManager)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _basketRepository = basketRepository;
+            _userManager = userManager;
 
             // Initialize lazy ProductServices
             lazyProductServices = new Lazy<IProductServices>(
@@ -34,12 +39,19 @@ namespace ECommerce.Services.BusinessServices
             lazyBasketServices = new Lazy<IBasketService>(
                 () => new BasketServices(_basketRepository, _mapper)
             );
+
+            lazyAuthenticationServices = new Lazy<IAuthenticationServices>(
+                () => new AuthenticationServices(_userManager)
+            );
         }
 
         // Expose ProductServices via IServiceManager
         public IProductServices ProductServices => lazyProductServices.Value;
 
         // Expose BasketServices via IServiceManager
-        public IBasketService BasketServices => lazyBasketServices.Value; 
+        public IBasketService BasketServices => lazyBasketServices.Value;
+
+        // Expose AuthenticationServices via IServiceManager
+        public IAuthenticationServices AuthenticationServices => lazyAuthenticationServices.Value; 
     }
 }
