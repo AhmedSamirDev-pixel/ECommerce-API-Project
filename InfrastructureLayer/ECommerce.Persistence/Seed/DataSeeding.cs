@@ -1,6 +1,8 @@
 ﻿using ECommerce.Domain.Contracts.Seed;
 using ECommerce.Domain.Models.Products;
 using ECommerce.Persistence.Contexts;
+using ECommerce.Persistence.Identity.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,15 @@ namespace ECommerce.Persistence.Seed
     public class DataSeeding : IDataSeeding
     {
         private readonly StoreDbContext _context;
-        public DataSeeding(StoreDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly StoreIdentityDbContext _storeIdentityDbContext;
+        public DataSeeding(StoreDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, StoreIdentityDbContext storeIdentityDbContext)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _storeIdentityDbContext = storeIdentityDbContext;
         }
 
         public async Task DataSeedAsync()
@@ -87,6 +95,58 @@ namespace ECommerce.Persistence.Seed
 
         }
 
+        public async Task IdentityDataSeedAsync()
+        {
+            try
+            {
+                if (!_roleManager.Roles.Any())
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    await _roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+                }
+
+                if (!_userManager.Users.Any())
+                {
+                    var User1 = new ApplicationUser
+                    {
+                        Email = "Ahmed@gmail.com",
+                        DisplayName = "Ahmed Samir",
+                        PhoneNumber = "01019412738",
+                        UserName = "ahmedrashed"
+                    };
+
+                    var User2 = new ApplicationUser
+                    {
+                        Email = "Ali@gmail.com",
+                        DisplayName = "Ali Yaseer",
+                        PhoneNumber = "011481782974",
+                        UserName = "aliyasser"
+                    };
+
+                    var User3 = new ApplicationUser
+                    {
+                        Email = "Yassmine@gmail.com",
+                        DisplayName = "Yassmine Mohammed",
+                        PhoneNumber = "012298394857",
+                        UserName = "yasminmohammed"
+                    };
+
+                    await _userManager.CreateAsync(User1, "Ahmed@Samir0");
+                    await _userManager.CreateAsync(User2, "Ali@Yasser0");
+                    await _userManager.CreateAsync(User3, "Yassmine@Mohammed0");
+
+                    await _userManager.AddToRoleAsync(User1, "Admin");
+                    await _userManager.AddToRoleAsync(User2, "Admin");
+                    await _userManager.AddToRoleAsync(User3, "SuperAdmin");
+                }
+
+                await _storeIdentityDbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 
 }

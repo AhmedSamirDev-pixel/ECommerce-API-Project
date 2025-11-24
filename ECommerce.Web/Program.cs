@@ -52,6 +52,7 @@ namespace ECommerce.Web
                 // "RedisConnection": "localhost"
                 return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
             });
+
             #endregion
 
 
@@ -107,10 +108,13 @@ namespace ECommerce.Web
 
             // Seed the database
             var scope = app.Services.CreateScope();
+
             // Get the IDataSeeding service from the service provider
             var dataSeeding = scope.ServiceProvider.GetRequiredService<IDataSeeding>();
+
             // Call the DataSeed method to seed the database
             dataSeeding.DataSeedAsync();
+            dataSeeding.IdentityDataSeedAsync();
 
 
             // Configure the HTTP request pipeline.
