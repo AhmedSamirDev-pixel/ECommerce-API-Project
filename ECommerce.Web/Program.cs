@@ -11,11 +11,14 @@ using ECommerce.Services.MappingProfile;
 using ECommerce.ServicesAbstraction.IServices;
 using ECommerce.Shared.ErrorModels;
 using ECommerce.Web.CustomMiddlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 
 namespace ECommerce.Web
 {
@@ -101,7 +104,27 @@ namespace ECommerce.Web
             builder.Services.AddAutoMapper(mapper => mapper
                     .AddProfile(new ProjectProfile(builder.Configuration)));
 
+            #region Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<StoreIdentityDbContext>();
+
+            builder.Services.AddAuthentication(configuration =>
+            {
+                configuration.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                configuration.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration.GetSection("JWTOptions")["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration.GetSection("JWTOptions")["Audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWTOptions")["SecurityKey"]))
+                };
+            });
+
+            #endregion
 
             var app = builder.Build();
 
@@ -126,6 +149,8 @@ namespace ECommerce.Web
             app.UseMiddleware<CustomExceptionMiddleware>();    
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             // Enable serving static files
             app.UseStaticFiles();
