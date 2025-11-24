@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using ECommerce.Domain.Models.Baskets;
+using ECommerce.Domain.Models.Identity;
 using ECommerce.Domain.Models.Products;
 using ECommerce.Shared.DTOs;
 using ECommerce.Shared.DTOs.BasketDTOs;
+using ECommerce.Shared.DTOs.IdentityDTOS;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -33,12 +35,13 @@ namespace ECommerce.Services.MappingProfile
                 .ForMember(destination => destination.PictureUrl,
                             options => options.MapFrom(new PictureUrlResolver(_configuration)));
 
-
             CreateMap<ProductBrand, BrandDTO>();
             CreateMap<ProductType, TypeDTO>();
 
             CreateMap<CustomerBasket, BasketDTO>().ReverseMap();    
-            CreateMap<BasketItem, BasketItemDTO>().ReverseMap();    
+            CreateMap<BasketItem, BasketItemDTO>().ReverseMap();
+
+            CreateMap<Address, AddressDTO>().ReverseMap();
         }
     }
 }

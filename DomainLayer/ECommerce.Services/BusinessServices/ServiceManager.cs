@@ -44,7 +44,7 @@ namespace ECommerce.Services.BusinessServices
             );
 
             lazyAuthenticationServices = new Lazy<IAuthenticationServices>(
-                () => new AuthenticationServices(_userManager, _configuration)
+                () => new AuthenticationServices(_userManager, _configuration, _mapper)
             );
         }
 
