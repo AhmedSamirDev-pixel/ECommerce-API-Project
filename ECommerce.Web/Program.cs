@@ -4,6 +4,7 @@ using ECommerce.Domain.Contracts.Seed;
 using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Persistence.BasketRepo;
 using ECommerce.Persistence.Contexts;
+using ECommerce.Persistence.Identity.Models;
 using ECommerce.Persistence.Seed;
 using ECommerce.Persistence.UnitOfWork;
 using ECommerce.Services.BusinessServices;
@@ -11,6 +12,7 @@ using ECommerce.Services.MappingProfile;
 using ECommerce.ServicesAbstraction.IServices;
 using ECommerce.Shared.ErrorModels;
 using ECommerce.Web.CustomMiddlewares;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -30,24 +32,44 @@ namespace ECommerce.Web
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            #region Databases Connections
             // Configure the DbContext with SQL Server provider
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+
+            // Register the Redis connection multiplexer as a singleton
+            // Singleton is used because we only need one Redis connection throughout the application
+            builder.Services.AddSingleton<IConnectionMultiplexer>((_) =>
+            {
+                // Connect to Redis using the connection string defined in appsettings.json
+                // "RedisConnection": "localhost"
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
+            });
+            #endregion
+
+
+            #region Business Services
             // Register the DataSeeding service
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
 
             // Register the UnitOfWork service
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Configure AutoMapper with the ProjectProfile
-            builder.Services.AddAutoMapper(mapper => mapper
-                    .AddProfile(new ProjectProfile(builder.Configuration)));
-
             // Register the ServiceManager service
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
+            // Register the BasketRepository as a scoped service
+            // This means a new instance will be created per HTTP request
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>(); 
+            #endregion
+            
 
             // Configure Custom Validation Error Response
             builder.Services.Configure<ApiBehaviorOptions>((options) =>
@@ -75,18 +97,11 @@ namespace ECommerce.Web
                 };
             });
 
-            // Register the BasketRepository as a scoped service
-            // This means a new instance will be created per HTTP request
-            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            // Configure AutoMapper with the ProjectProfile
+            builder.Services.AddAutoMapper(mapper => mapper
+                    .AddProfile(new ProjectProfile(builder.Configuration)));
 
-            // Register the Redis connection multiplexer as a singleton
-            // Singleton is used because we only need one Redis connection throughout the application
-            builder.Services.AddSingleton<IConnectionMultiplexer>((_) =>
-            {
-                // Connect to Redis using the connection string defined in appsettings.json
-                // "RedisConnection": "localhost"
-                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
-            });
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<StoreIdentityDbContext>();
 
             var app = builder.Build();
 
