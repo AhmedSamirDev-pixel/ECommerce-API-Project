@@ -1,11 +1,9 @@
-
 using ECommerce.Domain.Contracts.BasketRepo;
 using ECommerce.Domain.Contracts.Seed;
 using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Domain.Models.Identity;
 using ECommerce.Persistence.BasketRepo;
 using ECommerce.Persistence.Contexts;
-using ECommerce.Persistence.Identity.Models;
 using ECommerce.Persistence.Seed;
 using ECommerce.Persistence.UnitOfWork;
 using ECommerce.Services.BusinessServices;
