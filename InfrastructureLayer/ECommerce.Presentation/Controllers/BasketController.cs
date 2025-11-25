@@ -32,6 +32,7 @@ namespace ECommerce.Presentation.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<BasketDTO>> CreateUpdateBasket(BasketDTO basket)
         {
