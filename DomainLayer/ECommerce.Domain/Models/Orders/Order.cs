@@ -9,6 +9,19 @@ namespace ECommerce.Domain.Models.Orders
 {
     public class Order : BaseEntity<Guid>
     {
+        public Order()
+        {
+            
+        }
+        public Order(string userEmail, OrderAddress orderAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal)
+        {
+            UserEmail = userEmail;
+            OrderAddress = orderAddress;
+            DeliveryMethod = deliveryMethod;
+            Items = items;
+            SubTotal = subTotal;
+        }
+
         public string UserEmail { get; set; } = null!;
         public DateTimeOffset OrderDate { get; set; } = DateTimeOffset.Now;
         public OrderAddress OrderAddress { get; set; } = null!;
