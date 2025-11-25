@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using ECommerce.Domain.Models.Baskets;
 using ECommerce.Domain.Models.Identity;
+using ECommerce.Domain.Models.Orders;
 using ECommerce.Domain.Models.Products;
 using ECommerce.Shared.DTOs;
 using ECommerce.Shared.DTOs.BasketDTOs;
 using ECommerce.Shared.DTOs.IdentityDTOS;
+using ECommerce.Shared.DTOs.OrderDTOs;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,25 @@ namespace ECommerce.Services.MappingProfile
             CreateMap<BasketItem, BasketItemDTO>().ReverseMap();
 
             CreateMap<Address, AddressDTO>().ReverseMap();
+
+            // Maps AddressDTO to OrderAddress and vice versa (ReverseMap)
+            CreateMap<AddressDTO, OrderAddress>().ReverseMap();
+
+            // Maps Order domain model to OrderToReturnDTO
+            CreateMap<Order, OrderToReturnDTO>()
+                // Map the DeliveryMethod property to the ShortName of the DeliveryMethod entity
+                .ForMember(dest => dest.DeliveryMethod,
+                           options => options.MapFrom(src => src.DeliveryMethod.ShortName));
+
+            // Maps OrderItem domain model to OrderItemDTO
+            CreateMap<OrderItem, OrderItemDTO>()
+                // Map ProductName from the nested ProductItemOrder object
+                .ForMember(dest => dest.ProductName,
+                           options => options.MapFrom(src => src.ProductItemOrder.ProductName))
+
+                // Map PictureUrl using a custom resolver (OrderPictureUrlResolver)
+                .ForMember(dest => dest.PictureUrl,
+                           options => options.MapFrom(new OrderPictureUrlResolver(configuration)));
         }
     }
 }
