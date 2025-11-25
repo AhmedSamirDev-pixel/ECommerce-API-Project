@@ -178,6 +178,7 @@ namespace ECommerce.Web
             // Call the DataSeed method to seed the database
             dataSeeding.DataSeedAsync();
             dataSeeding.IdentityDataSeedAsync();
+            dataSeeding.SeedDeliveryMethodsAsync();
 
 
             // Configure the HTTP request pipeline.

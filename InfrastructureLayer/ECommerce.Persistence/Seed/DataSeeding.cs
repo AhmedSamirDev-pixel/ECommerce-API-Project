@@ -1,5 +1,6 @@
 ﻿using ECommerce.Domain.Contracts.Seed;
 using ECommerce.Domain.Models.Identity;
+using ECommerce.Domain.Models.Orders;
 using ECommerce.Domain.Models.Products;
 using ECommerce.Persistence.Contexts;
 using Microsoft.AspNetCore.Identity;
@@ -147,6 +148,48 @@ namespace ECommerce.Persistence.Seed
                 throw;
             }
         }
+
+        public async Task SeedDeliveryMethodsAsync()
+        {
+            if (!_context.DeliveryMethods.Any())
+            {
+                var deliveryMethods = new List<DeliveryMethod>
+                {
+                    new DeliveryMethod
+                    {
+                        ShortName = "UPS1",
+                        Description = "Fastest delivery time",
+                        DeliveryTime = "1-2 Days",
+                        Price = 10
+                    },
+                    new DeliveryMethod
+                    {
+                        ShortName = "UPS2",
+                        Description = "Get it within 5 days",
+                        DeliveryTime = "2-5 Days",
+                        Price = 5
+                    },
+                    new DeliveryMethod
+                    {
+                        ShortName = "UPS3",
+                        Description = "Slower but cheap",
+                        DeliveryTime = "5-10 Days",
+                        Price = 2
+                    },
+                    new DeliveryMethod
+                    {
+                        ShortName = "FREE",
+                        Description = "Free! You get what you pay for",
+                        DeliveryTime = "1-2 Weeks",
+                        Price = 0
+                    }
+                };
+
+                _context.DeliveryMethods.AddRange(deliveryMethods);
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 
 }

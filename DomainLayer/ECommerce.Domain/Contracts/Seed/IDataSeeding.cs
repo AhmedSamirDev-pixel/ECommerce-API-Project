@@ -10,5 +10,7 @@ namespace ECommerce.Domain.Contracts.Seed
     {
         Task DataSeedAsync();
         Task IdentityDataSeedAsync();
+
+        Task SeedDeliveryMethodsAsync();
     }
 }
