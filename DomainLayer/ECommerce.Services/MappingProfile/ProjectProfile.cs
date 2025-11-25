@@ -64,6 +64,8 @@ namespace ECommerce.Services.MappingProfile
                 // Map PictureUrl using a custom resolver (OrderPictureUrlResolver)
                 .ForMember(dest => dest.PictureUrl,
                            options => options.MapFrom(new OrderPictureUrlResolver(configuration)));
+
+            CreateMap<DeliveryMethod, DeliveryMethodDTO>().ReverseMap();
         }
     }
 }

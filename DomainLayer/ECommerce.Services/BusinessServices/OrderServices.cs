@@ -5,6 +5,7 @@ using ECommerce.Domain.Exceptions;
 using ECommerce.Domain.Models.Identity;
 using ECommerce.Domain.Models.Orders;
 using ECommerce.Domain.Models.Products;
+using ECommerce.Services.Specifications;
 using ECommerce.ServicesAbstraction.IServices;
 using ECommerce.Shared.DTOs.IdentityDTOS;
 using ECommerce.Shared.DTOs.OrderDTOs;
@@ -92,6 +93,33 @@ namespace ECommerce.Services.BusinessServices
             // Map the created order to a DTO that will be returned to the client
             return _mapper.Map<Order, OrderToReturnDTO>(order);
         }
+
+        public async Task<IEnumerable<DeliveryMethodDTO>> GetDeliveryMethodAsync()
+        {
+            var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>().GetAllAsync();
+            return _mapper.Map<IEnumerable<DeliveryMethod>, IEnumerable<DeliveryMethodDTO>>(deliveryMethod);
+        }
+
+        public async Task<IEnumerable<OrderToReturnDTO>> GetAllOrdersAsync(string email)
+        {
+            var specification = new OrderSpecification(email);
+
+            var orders = await _unitOfWork.GetRepository<Order, Guid>().GetAllWithSpecificationsAsync(specification);
+
+            return _mapper.Map<IEnumerable<Order>, IEnumerable<OrderToReturnDTO>>(orders);
+
+        }
+
+        public async Task<OrderToReturnDTO> GetOrderByIdAsync(Guid orderId)
+        {
+            var specification = new OrderSpecification(orderId);
+
+            var order = await _unitOfWork.GetRepository<Order, Guid>().GetByIdWithSpecificationsAsync(specification);
+
+            return _mapper.Map<Order, OrderToReturnDTO>(order);
+        }
+
+        
     }
 
 }
