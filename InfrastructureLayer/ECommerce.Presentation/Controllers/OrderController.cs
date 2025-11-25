@@ -34,5 +34,34 @@ namespace ECommerce.Presentation.Controllers
             var order = await _serviceManager.OrderServices.CreateOrderAsync(orderDTO, email);
             return Ok(order);
         }
+
+        [HttpGet("DeliveryMethods")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<DeliveryMethodDTO>>> GetDeliveryMethods()
+        {
+            var deliveryMethods = await _serviceManager.OrderServices.GetDeliveryMethodAsync();
+            return Ok(deliveryMethods);
+        }
+
+
+        [HttpGet("AllOrders")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<OrderToReturnDTO>>> GetAllOrders()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var orders = await _serviceManager.OrderServices.GetAllOrdersAsync(email);
+            return Ok(orders);
+        }
+
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<OrderToReturnDTO>> GetAllOrdersForUser(Guid orderId)
+        {
+            var order = await _serviceManager.OrderServices.GetOrderByIdAsync(orderId);
+            return Ok(order);
+        }
+
+
     }
 }
