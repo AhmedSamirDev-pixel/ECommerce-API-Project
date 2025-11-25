@@ -21,29 +21,39 @@ namespace ECommerce.Services.BusinessServices
         private readonly IMapper _mapper;
         private readonly IBasketRepository _basketRepository;
         private readonly IUnitOfWork _unitOfWork;
+
         public OrderServices(IMapper mapper, IBasketRepository basketRepository, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _basketRepository = basketRepository;
             _unitOfWork = unitOfWork;
         }
+
         public async Task<OrderToReturnDTO> CreateOrderAsync(OrderDTO orderDTO, string email)
         {
-            // Map Address to Order Address
+            // Map the incoming AddressDTO to the OrderAddress domain model
             var orderAddress = _mapper.Map<AddressDTO, OrderAddress>(orderDTO.Address);
-            
-            // Get Basket
-            var basket = await _basketRepository.GetBasketAsync(orderDTO.BasketId) ?? throw new BasketNoFoundException(orderDTO.BasketId);
 
-            // Create OrderItems List 
+            // Retrieve the basket using the basket ID
+            // Throw BasketNotFoundException if it does not exist
+            var basket = await _basketRepository.GetBasketAsync(orderDTO.BasketId)
+                ?? throw new BasketNoFoundException(orderDTO.BasketId);
+
+            // Initialize list that will hold OrderItem entities
             List<OrderItem> orderItems = [];
 
-            var productRepo =  _unitOfWork.GetRepository<Product, int>();
+            // Get product repository through Unit of Work
+            var productRepo = _unitOfWork.GetRepository<Product, int>();
 
+            // Loop through each basket item and convert it to an OrderItem
             foreach (var item in basket.Items)
             {
-                var product = await productRepo.GetByIdAsync(item.Id) ?? throw new ProductNotFound(item.Id);
+                // Fetch the product from DB (for price and validation)
+                // Throw ProductNotFound if product does not exist
+                var product = await productRepo.GetByIdAsync(item.Id)
+                    ?? throw new ProductNotFound(item.Id);
 
+                // Create the OrderItem including nested ProductItemOrder
                 var orderItem = new OrderItem()
                 {
                     ProductItemOrder = new ProductItemOrder()
@@ -56,25 +66,32 @@ namespace ECommerce.Services.BusinessServices
                     Quantity = item.Quantity,
                     Price = item.Price
                 };
-                
+
+                // Add the order item to the list
                 orderItems.Add(orderItem);
             }
 
+            // Get the delivery method by ID
+            // Throw DeliveryMethodNotFoundException if not found
+            var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>()
+                .GetByIdAsync(orderDTO.DeliveryMethodId)
+                ?? throw new DeliveryMethodNotFoundException(orderDTO.DeliveryMethodId);
 
-            // Get Delivery Method
-            var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>().GetByIdAsync(orderDTO.DeliveryMethodId) ??  throw new DeliveryMethodNotFoundException(orderDTO.DeliveryMethodId);
-
-            // Sub Total 
+            // Calculate subtotal = sum of (price * quantity)
             var subTotal = orderItems.Sum(i => i.Price * i.Quantity);
 
+            // Create a new Order domain entity using the constructor
             var order = new Order(email, orderAddress, deliveryMethod, orderItems, subTotal);
 
+            // Add the order to the repository
             _unitOfWork.GetRepository<Order, Guid>().Add(order);
 
+            // Save all changes in the database
             await _unitOfWork.SaveChangesAsync();
 
+            // Map the created order to a DTO that will be returned to the client
             return _mapper.Map<Order, OrderToReturnDTO>(order);
-
         }
     }
+
 }
