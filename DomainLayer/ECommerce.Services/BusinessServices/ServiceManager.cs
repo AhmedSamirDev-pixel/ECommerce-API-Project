@@ -21,40 +21,60 @@ namespace ECommerce.Services.BusinessServices
         private readonly IBasketRepository _basketRepository;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
+
+        // Lazy loading ensures that each service is created only when first accessed
         private readonly Lazy<IProductServices> lazyProductServices;
         private readonly Lazy<IBasketService> lazyBasketServices;
         private readonly Lazy<IAuthenticationServices> lazyAuthenticationServices;
+        private readonly Lazy<IOrderServices> lazyOrderServices;
 
-        public ServiceManager(IMapper mapper, IUnitOfWork unitOfWork, IBasketRepository basketRepository, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public ServiceManager(
+            IMapper mapper,
+            IUnitOfWork unitOfWork,
+            IBasketRepository basketRepository,
+            UserManager<ApplicationUser> userManager,
+            IConfiguration configuration)
         {
+            // Save injected dependencies
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _basketRepository = basketRepository;
             _userManager = userManager;
             _configuration = configuration;
 
-            // Initialize lazy ProductServices
+            // Lazy initialization of ProductServices
+            // Created only when ProductServices is accessed
             lazyProductServices = new Lazy<IProductServices>(
                 () => new ProductServices(_unitOfWork, _mapper)
             );
 
-            // Initialize lazy BasketServices using _basketRepository
+            // Lazy initialization of BasketServices
             lazyBasketServices = new Lazy<IBasketService>(
                 () => new BasketServices(_basketRepository, _mapper)
             );
 
+            // Lazy initialization of AuthenticationServices
             lazyAuthenticationServices = new Lazy<IAuthenticationServices>(
                 () => new AuthenticationServices(_userManager, _configuration, _mapper)
             );
+
+            // Lazy initialization of OrderServices
+            lazyOrderServices = new Lazy<IOrderServices>(
+                () => new OrderServices(_mapper, basketRepository, _unitOfWork)
+            );
         }
 
-        // Expose ProductServices via IServiceManager
+        // Expose ProductServices instance via IServiceManager
         public IProductServices ProductServices => lazyProductServices.Value;
 
-        // Expose BasketServices via IServiceManager
+        // Expose BasketServices instance via IServiceManager
         public IBasketService BasketServices => lazyBasketServices.Value;
 
-        // Expose AuthenticationServices via IServiceManager
-        public IAuthenticationServices AuthenticationServices => lazyAuthenticationServices.Value; 
+        // Expose AuthenticationServices instance
+        public IAuthenticationServices AuthenticationServices => lazyAuthenticationServices.Value;
+
+        // Expose OrderServices instance
+        public IOrderServices OrderServices => lazyOrderServices.Value;
     }
+
 }

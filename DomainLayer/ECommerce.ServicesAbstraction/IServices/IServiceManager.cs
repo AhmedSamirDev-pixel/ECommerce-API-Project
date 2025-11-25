@@ -8,11 +8,17 @@ namespace ECommerce.ServicesAbstraction.IServices
 {
     public interface IServiceManager
     {
-        public IProductServices ProductServices { get; }
+        // Exposes product-related business operations
+        IProductServices ProductServices { get; }
 
-        public IBasketService BasketServices { get; }
+        // Exposes basket/cart-related business operations
+        IBasketService BasketServices { get; }
 
-        public IAuthenticationServices AuthenticationServices { get; }
+        // Exposes authentication and identity-related operations (login, register, tokens)
+        IAuthenticationServices AuthenticationServices { get; }
 
+        // Exposes order-related business operations (create order, get orders)
+        IOrderServices OrderServices { get; }
     }
+
 }

@@ -52,7 +52,8 @@ namespace ECommerce.Services.MappingProfile
             CreateMap<Order, OrderToReturnDTO>()
                 // Map the DeliveryMethod property to the ShortName of the DeliveryMethod entity
                 .ForMember(dest => dest.DeliveryMethod,
-                           options => options.MapFrom(src => src.DeliveryMethod.ShortName));
+                           options => options.MapFrom(src => src.DeliveryMethod.ShortName))
+                .ForMember(d => d.Address, opt => opt.MapFrom(src => src.OrderAddress));
 
             // Maps OrderItem domain model to OrderItemDTO
             CreateMap<OrderItem, OrderItemDTO>()
