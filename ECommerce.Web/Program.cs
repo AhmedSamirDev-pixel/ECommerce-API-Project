@@ -1,9 +1,11 @@
 using ECommerce.Domain.Contracts.BasketRepo;
+using ECommerce.Domain.Contracts.CacheRepo;
 using ECommerce.Domain.Contracts.Seed;
 using ECommerce.Domain.Contracts.UnitOfWork;
 using ECommerce.Domain.Models.Identity;
 using ECommerce.Persistence.BasketRepo;
 using ECommerce.Persistence.Contexts;
+using ECommerce.Persistence.Repos;
 using ECommerce.Persistence.Seed;
 using ECommerce.Persistence.UnitOfWork;
 using ECommerce.Services.BusinessServices;
@@ -89,11 +91,17 @@ namespace ECommerce.Web
 
             // Register the Redis connection multiplexer as a singleton
             // Singleton is used because we only need one Redis connection throughout the application
-            builder.Services.AddSingleton<IConnectionMultiplexer>((_) =>
+            // Register IConnectionMultiplexer (Singleton)
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
-                // Connect to Redis using the connection string defined in appsettings.json
-                // "RedisConnection": "localhost"
                 return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
+            });
+
+            // Register IDatabase (Scoped)
+            builder.Services.AddScoped<IDatabase>(sp =>
+            {
+                var multiplexer = sp.GetRequiredService<IConnectionMultiplexer>();
+                return multiplexer.GetDatabase();
             });
 
             #endregion
@@ -111,7 +119,13 @@ namespace ECommerce.Web
 
             // Register the BasketRepository as a scoped service
             // This means a new instance will be created per HTTP request
-            builder.Services.AddScoped<IBasketRepository, BasketRepository>(); 
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+
+            // Register the CacheRepository
+            builder.Services.AddScoped<ICacheRepository, CacheRepository>();
+
+            // Register the CacheServices
+            builder.Services.AddScoped<ICacheServices, CacheServices>();    
             #endregion
             
 

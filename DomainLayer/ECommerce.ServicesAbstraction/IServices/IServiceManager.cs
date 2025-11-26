@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ECommerce.ServicesAbstraction.IServices
 {
+    // Centralized service manager interface to access various business services
     public interface IServiceManager
     {
         // Exposes product-related business operations

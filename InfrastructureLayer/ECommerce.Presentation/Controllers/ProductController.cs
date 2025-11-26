@@ -1,4 +1,5 @@
-﻿using ECommerce.ServicesAbstraction.IServices;
+﻿using ECommerce.Presentation.Attribute;
+using ECommerce.ServicesAbstraction.IServices;
 using ECommerce.Shared.Common;
 using ECommerce.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +25,7 @@ namespace ECommerce.Presentation.Controllers
         }
 
         [HttpGet("products")]
+        [Cache]
         [ProducesResponseType(StatusCodes.Status200OK)]
         // Define action methods to handle product-related requests
         public async Task<ActionResult<PaginationResult<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParam productQueryParam)
