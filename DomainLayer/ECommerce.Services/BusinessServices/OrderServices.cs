@@ -40,6 +40,17 @@ namespace ECommerce.Services.BusinessServices
             var basket = await _basketRepository.GetBasketAsync(orderDTO.BasketId)
                 ?? throw new BasketNoFoundException(orderDTO.BasketId);
 
+            ArgumentNullException.ThrowIfNullOrEmpty(basket.PaymentIntentId);
+
+            var orderRepo = _unitOfWork.GetRepository<Order, Guid>();
+
+            // Check if an order with the same PaymentIntentId already exists
+            var specification = new OrderWithPaymentIntentIdSpecification(basket.PaymentIntentId);
+            var existingOrder = await orderRepo.GetByIdWithSpecificationsAsync(specification);
+            if (existingOrder is not null)
+                orderRepo.Delete(existingOrder);
+
+
             // Initialize list that will hold OrderItem entities
             List<OrderItem> orderItems = [];
 
@@ -82,7 +93,7 @@ namespace ECommerce.Services.BusinessServices
             var subTotal = orderItems.Sum(i => i.Price * i.Quantity);
 
             // Create a new Order domain entity using the constructor
-            var order = new Order(email, orderAddress, deliveryMethod, orderItems, subTotal);
+            var order = new Order(email, orderAddress, deliveryMethod, orderItems, subTotal, basket.PaymentIntentId);
 
             // Add the order to the repository
             _unitOfWork.GetRepository<Order, Guid>().Add(order);

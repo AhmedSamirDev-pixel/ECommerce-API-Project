@@ -13,13 +13,14 @@ namespace ECommerce.Domain.Models.Orders
         {
             
         }
-        public Order(string userEmail, OrderAddress orderAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal)
+        public Order(string userEmail, OrderAddress orderAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal, string paymentIntentId )
         {
             UserEmail = userEmail;
             OrderAddress = orderAddress;
             DeliveryMethod = deliveryMethod;
             Items = items;
             SubTotal = subTotal;
+            PaymentIntentId = paymentIntentId;
         }
 
         public string UserEmail { get; set; } = null!;
@@ -33,5 +34,7 @@ namespace ECommerce.Domain.Models.Orders
         public ICollection<OrderItem> Items { get; set; } = [];
         public decimal SubTotal { get; set; }
         public decimal GetTotal() => SubTotal + DeliveryMethod.Price;
+        public string? PaymentIntentId { get; set; }
+
     }
 }

@@ -20,6 +20,9 @@ namespace ECommerce.ServicesAbstraction.IServices
 
         // Exposes order-related business operations (create order, get orders)
         IOrderServices OrderServices { get; }
+
+        // Exposes payment-related business operations (process payments, handle payment intents)
+        IPaymentServices PaymentServices { get; }
     }
 
 }

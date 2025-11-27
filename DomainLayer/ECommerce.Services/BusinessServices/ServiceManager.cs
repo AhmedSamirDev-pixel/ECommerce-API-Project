@@ -27,6 +27,7 @@ namespace ECommerce.Services.BusinessServices
         private readonly Lazy<IBasketService> lazyBasketServices;
         private readonly Lazy<IAuthenticationServices> lazyAuthenticationServices;
         private readonly Lazy<IOrderServices> lazyOrderServices;
+        private readonly Lazy<IPaymentServices> lazyPaymentServices;
 
         public ServiceManager(
             IMapper mapper,
@@ -62,6 +63,11 @@ namespace ECommerce.Services.BusinessServices
             lazyOrderServices = new Lazy<IOrderServices>(
                 () => new OrderServices(_mapper, basketRepository, _unitOfWork)
             );
+
+            // Lazy initialization of PaymentServices
+            lazyPaymentServices = new Lazy<IPaymentServices>(
+                () => new PaymentServices(_configuration, _basketRepository, _unitOfWork, _mapper)
+            );
         }
 
         // Expose ProductServices instance via IServiceManager
@@ -75,6 +81,9 @@ namespace ECommerce.Services.BusinessServices
 
         // Expose OrderServices instance
         public IOrderServices OrderServices => lazyOrderServices.Value;
+
+        // Expose PaymentServices instance
+        public IPaymentServices PaymentServices => lazyPaymentServices.Value;
     }
 
 }
