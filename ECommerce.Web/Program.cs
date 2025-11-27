@@ -183,7 +183,6 @@ namespace ECommerce.Web
             StripeConfiguration.ApiKey = stripeSecret;
 
 
-
             var app = builder.Build();
 
             // Seed the database
