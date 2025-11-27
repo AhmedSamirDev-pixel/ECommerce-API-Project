@@ -33,7 +33,7 @@ namespace ECommerce.Services.BusinessServices
         public async Task<BasketDTO> CreateOrUpdatePaymentIntentAsync(string basketId)
         {
             // Install Stripe.Net package from NuGet to use Stripe functionalities
-            StripeConfiguration.ApiKey = _configuration["StripeSettings:SecretKey"];
+            //StripeConfiguration.ApiKey = _configuration["StripeSettings:SecretKey"];
             
             // Get the basket by Id 
             var basket = await _baskedRepository.GetBasketAsync(basketId) ?? throw new BasketNoFoundException(basketId);
