@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using Stripe;
 using System.Text;
 
 namespace ECommerce.Web
@@ -75,8 +76,6 @@ namespace ECommerce.Web
             });
             #endregion
 
-
-
             #region Databases Connections
             // Configure the DbContext with SQL Server provider
             builder.Services.AddDbContext<StoreDbContext>(options =>
@@ -106,7 +105,6 @@ namespace ECommerce.Web
 
             #endregion
 
-
             #region Business Services
             // Register the DataSeeding service
             builder.Services.AddScoped<IDataSeeding, DataSeeding>();
@@ -128,7 +126,6 @@ namespace ECommerce.Web
             builder.Services.AddScoped<ICacheServices, CacheServices>();    
             #endregion
             
-
             // Configure Custom Validation Error Response
             builder.Services.Configure<ApiBehaviorOptions>((options) =>
             {
@@ -180,6 +177,12 @@ namespace ECommerce.Web
             });
 
             #endregion
+
+
+            var stripeSecret = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+            StripeConfiguration.ApiKey = stripeSecret;
+
+
 
             var app = builder.Build();
 
